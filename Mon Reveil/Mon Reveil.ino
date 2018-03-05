@@ -4,25 +4,7 @@
 * ##############
 * 
 * Auteur:  MCHOBBY (Stefan)
-* Réalisé à partir du: 12/02/2018
 * Version:  1.0
-* 
-* Matériel
-* - Arduino UNO / Feather
-* - Afficheur 7 segments x 4 (Adafruit HT16k33)
-* - RTC (DS1307)
-* - 8 Boutons (4 pins)
-* - 2 Boutons (type arcade)
-* - Piezo Buzzer 
-* 
-* Connectique
-* # Afficheurs 
-*   + C (SCL) -> A5 
-*   + D (SDA) -> A4
-* # RTC
-*   + SCL -> A5
-*   + SDA -> A4
-*
 */
 #include "Adafruit_LEDBackpack.h"
 #include <RTClib.h>

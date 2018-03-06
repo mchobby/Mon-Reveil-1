@@ -1,6 +1,3 @@
-// Créer sa propre mélodie sous Windows 
-// http://home.mit.bme.hu/~bako/tonecalc/tonecalc.htm
-
 // Axel F mélodie
 // Source https://github.com/nseidle/AxelF_DoorBell/tree/master/AxelF
 #define AXEL_F { \

@@ -111,8 +111,6 @@ void setup() {
     alarme[j].programme = EEPROM.read(i+2);
     j++;
   }
-  
-  //   affichageEEpromContenu();
 }
 
 /*

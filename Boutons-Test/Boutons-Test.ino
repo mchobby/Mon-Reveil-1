@@ -28,6 +28,9 @@ void setup() {
   // Communication RS232
   Serial.begin( 9600 );
   
+  // Flasher l'EEPROM
+  eepromConfiguration();
+  
   // Initialisation des boutons
   pinMode( boutonOk, INPUT_PULLUP );
   pinMode( boutonMoins, INPUT_PULLUP );
@@ -101,3 +104,25 @@ boolean estAppuye(int pinAppuye){
   else 
     return false;
 }   
+/*
+* Formatter l'EEPROM
+*/
+void eepromConfiguration(){
+    
+    // Formatter l'EEPROM
+    for (int i = 0 ; i < EEPROM.length() ; i++) 
+       EEPROM.write(i, 0);
+    Serial.println("EEPROM formatté !");
+    
+    // Valeur par défaut pour savoir si l'EEPROM est formatté
+    EEPROM.write(0, 255); 
+    Serial.println("Valeur par défaut définie !");
+
+    // Définir une version
+    EEPROM.write(1, 10); 
+    Serial.println("Version définie !");
+    
+    // Définir une luminosité 
+    EEPROM.write(2, 15); 
+    Serial.println("Valeur par défaut pour la luminosité est définie !");
+}

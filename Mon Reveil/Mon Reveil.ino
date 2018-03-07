@@ -1,9 +1,6 @@
 /*
-* ##############
-* #   Réveil   #
-* ##############
-* 
-* Auteur:  MCHOBBY (Stefan)
+* Deveopped by Stefan for shop.mchobby.be - CC-BY-SA
+* Distributed as it, without warranties
 * Version:  1.0
 */
 #include "Adafruit_LEDBackpack.h"

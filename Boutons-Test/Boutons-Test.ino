@@ -1,14 +1,10 @@
 /*
-* ############################
-* #   Réveil - Test Boutons  #
-* ############################
-* 
-* Auteur:  MCHOBBY (Stefan)
-* Réalisé le: 12/02/2018
+* Deveopped by Stefan for shop.mchobby.be - CC-BY-SA
+* Distributed as it, without warranties
 * Version:  1.0
-* 
-* 
+* Configurations buttons + format eeprom
 */
+
 #define boutonLuminosite    2  // digital
 #define boutonAlarmeControl 3  // digital
 #define boutonPlus          9  // digital

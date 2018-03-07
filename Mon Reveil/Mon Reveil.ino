@@ -155,9 +155,6 @@ void jouerMelodie(){
 
       int dureeNote = 2000 / MELODIE[notePosition][1];
       tone(piezoBuzzer,MELODIE[notePosition][0], dureeNote * vitesseLecture); 
-      Serial.print(MELODIE[notePosition][0]);
-      Serial.print("-");
-      Serial.println(MELODIE[notePosition][1]);
       
       int nbrLignesTableauMelodie = (sizeof( MELODIE ) / sizeof( int ) / 2) -1;
       if( notePosition >= nbrLignesTableauMelodie )
@@ -188,7 +185,6 @@ void alarmeStart(int alarmePos){
   alarme[alarmePos].sonne = true;
   digitalWrite(ledBoutonOK, HIGH);
   digitalWrite(ledBoutonSnooze, HIGH);
-  Serial.println("Alarme Start");
   notePrecedente = 0;
 }
 /*
@@ -199,7 +195,6 @@ void alarmeStop(int alarmePos){
   noTone(piezoBuzzer);
   digitalWrite(ledBoutonOK, LOW);
   digitalWrite(ledBoutonSnooze, LOW);
-  Serial.println("Alarme Stop");
 }
 /*
  * Pendant que l'alarme sonne, répéter une étape
@@ -232,13 +227,11 @@ void alarmeGestionAutomatique(){
         alarmeStart(i);
         // A quelle heure se stop l'alarme
         alarme[i].heureStop = rtc.now().unixtime() + DUREEALARME;
-        Serial.println("Alarme Start - normal");
       }
       // Alarme sonne (mode snooze)
       if( alarme[i].snoozeSonne.unixtime() == maint.unixtime() && !alarme[i].sonne && alarmeDerniereAction == ACTION_SNOOZE ){
         alarmeStart(i);
         alarme[i].heureStop = rtc.now().unixtime() + DUREEALARME;
-        Serial.println("Alarme Start - Snooze");
       }
       // Alarme s'arrête après un délai (mode normal)
       if( alarme[i].heureStop.unixtime() <= maint.unixtime() && alarme[i].sonne && alarmeDerniereAction != ACTION_SNOOZE ){
@@ -247,7 +240,6 @@ void alarmeGestionAutomatique(){
         alarmeStop(i);
         // Posposer l'alarme à demain
         alarme[i].heureSonne = alarme[i].heureSonne.unixtime() + 86400;
-        Serial.println("Alarme Stop - normal");
       }
       // Alarme s'arrête après un délai (mode snooze)
       if( alarme[i].heureStop.unixtime() == maint.unixtime() && alarme[i].sonne && alarmeDerniereAction == ACTION_SNOOZE ){
@@ -256,7 +248,6 @@ void alarmeGestionAutomatique(){
         alarmeStop(i);
         // Posposer l'alarme à demain
         alarme[i].heureSonne = alarme[i].heureSonne.unixtime() + 86400;
-        Serial.println("Alarme Stop - snooze");
       }
       // Si l'alarme sonne
       if(alarme[i].sonne){
@@ -376,42 +367,6 @@ void eepromConfiguration(){
     // Définir une luminosité 
     EEPROM.write(2, 15); 
     Serial.println("Valeur par défaut pour la luminosité est définie !");
-}
-/*
- * Affichage du contenu de l'eeprom
- */
-void affichageEEpromContenu(){
-  // Taille mémoire de l'EEPROM
-  int octets = 1024;
-  
-  int j = 0;
-  Serial.println("Zone mémoire");
-  for(int i=0 ; i<octets ; i++){
-    Serial.print("|");
-    if( i == 0 )
-      Serial.print("Fanion");
-    else if( i == 1 )
-      Serial.print("Version");
-    else if( i == 2 )
-      Serial.print("Luminosité");
-    else if( j == 0 ){
-      Serial.print("Alarme Heure");
-      j++;
-    }
-    else if( j == 1 ){
-      Serial.print("Alarme Minute");
-      j++;
-    }
-    else{
-      Serial.print("Alarme Prog");
-      j=0;
-    }
-    Serial.print("|\t|");
-    Serial.print(EEPROM.read(i));
-    Serial.println("|");
-    if ( i >= 2 && j == 0 )
-      Serial.println();
-  }
 }
 
 /*

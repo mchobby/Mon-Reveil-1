@@ -20,7 +20,7 @@
 #define piezoBuzzer         13 // digital
 
 
-const int BOUTONALARME[] = {8, 7, 9, 10};  // Quelles pin pour chaques alarmes
+const int BOUTONALARME[] = {9, 8, 10, 11};  // Quelles pin pour chaques alarmes
 const int NBRALARMES = sizeof( BOUTONALARME ) / sizeof( int );  // Combien d'alarmes
 
 void setup() {

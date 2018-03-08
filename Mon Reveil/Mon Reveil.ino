@@ -28,7 +28,7 @@
 // ================================================
 const int SNOOZEATTENTE     = 10;               // Durant combien de minutes l'utilisateur va t'il encore dormir ? (en secondes)
 const int DUREEALARME       = 20;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
-const int BOUTONALARME[] = {8, 7, 9, 10};       // Quelles pin pour chaques alarmes    
+const int BOUTONALARME[] = {9, 8, 10, 11};      // Quelles pin pour chaques alarmes
 const float vitesseLecture  = 1;                // Vitesse sonore des alarmes (par défaut 1)
 const int MELODIE[][2]      = ALARM1;           // Sélectionner la musique que vous désirez pour vos alarmes
 // ================================================

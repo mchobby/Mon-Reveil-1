@@ -8,17 +8,17 @@
 #include <EEPROM.h>
 #include "pitches.h"  // Notes de musique
 #include "melodies.h" // Playlists de musiques
+#define boutonAlarmeControl 2  // digital
+#define boutonPlus          3  // digital
+#define boutonMoins         4  // digital
+#define boutonLuminosite    5  // digital
 
-#define boutonLuminosite    2  // digital
-#define boutonAlarmeControl 3  // digital
-#define boutonPlus          9  // digital
-#define boutonMoins         10 // digital
-#define piezoBuzzer         13 // digital
 #define boutonOk            14 // analog 0
 #define boutonSnooze        15 // analog 1
-
 #define ledBoutonOK         16 // analog 2
 #define ledBoutonSnooze     17 // analog 3
+
+#define piezoBuzzer         13 // digital
 
 #define ACTION_STOP         1
 #define ACTION_SNOOZE       2
@@ -28,7 +28,7 @@
 // ================================================
 const int SNOOZEATTENTE     = 10;               // Durant combien de minutes l'utilisateur va t'il encore dormir ? (en secondes)
 const int DUREEALARME       = 20;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
-const int BOUTONALARME[]    = {8, 7, 5, 4};     // Quelles pin pour chaques alarmes
+const int BOUTONALARME[] = {8, 7, 9, 10};       // Quelles pin pour chaques alarmes    
 const float vitesseLecture  = 1;                // Vitesse sonore des alarmes (par défaut 1)
 const int MELODIE[][2]      = ALARM1;           // Sélectionner la musique que vous désirez pour vos alarmes
 // ================================================

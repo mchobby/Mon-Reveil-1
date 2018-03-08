@@ -5,19 +5,22 @@
 * Configurations buttons + format eeprom
 */
 
-#define boutonLuminosite    2  // digital
-#define boutonAlarmeControl 3  // digital
-#define boutonPlus          9  // digital
-#define boutonMoins         10 // digital
-#define piezoBuzzer         13 // digital
+#include <EEPROM.h>
+
+#define boutonAlarmeControl 2  // digital
+#define boutonPlus          3  // digital
+#define boutonMoins         4  // digital
+#define boutonLuminosite    5  // digital
+
 #define boutonOk            14 // analog 0
 #define boutonSnooze        15 // analog 1
-
 #define ledBoutonOK         16 // analog 2
 #define ledBoutonSnooze     17 // analog 3
 
+#define piezoBuzzer         13 // digital
 
-const int BOUTONALARME[] = {8, 7, 5, 4};  // Quelles pin pour chaques alarmes
+
+const int BOUTONALARME[] = {8, 7, 9, 10};  // Quelles pin pour chaques alarmes
 const int NBRALARMES = sizeof( BOUTONALARME ) / sizeof( int );  // Combien d'alarmes
 
 void setup() {

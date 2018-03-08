@@ -1,4 +1,9 @@
 /*
+********************
+**** Mon Réveil ****
+********************
+* Un réveil hackable contenant 4 alarmes et un réglage de luminosité
+* 
 * Deveopped by Stefan for shop.mchobby.be - CC-BY-SA
 * Distributed as it, without warranties
 * Version:  1.0

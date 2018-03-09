@@ -66,7 +66,6 @@ unsigned long avantClignote = 0; // Savoir la dernière fois (durée) que les 2 
 // ### Mélodie ###
 unsigned long notePrecedente = 0; // Savoir la dernière fois (durée) que la note précédente a été démarrée
 int notePosition = 0;  
-boolean melodieJoue = false;  
          
 // ### Autres ###
 Adafruit_7segment afficheurs = Adafruit_7segment(); // Initialisation de l'afficheur 7 segments
@@ -79,7 +78,6 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de l'rtc
  * Alarme qui commence à sonner
  */
 void alarmeStart(int alarmePos){
-  // Faire sonner l'alarme
   activerMelodie();
 }
 
@@ -87,9 +85,7 @@ void alarmeStart(int alarmePos){
  * Pendant que l'alarme sonne, répéter une étape
  */
 void alarmePulse(){
-  // Jouer la mélodie en continu si activé
-  if( melodieJoue ) 
-    jouerMelodie();
+  jouerMelodie();
 }
 
 /*
@@ -228,8 +224,6 @@ void loop() {
 void activerMelodie(){
   // Remettre au début de la mélodie
   notePrecedente = 0;
-  // On joue la mélodie
-  melodieJoue = true;
 }
 /*
  * Jouer la mélodie
@@ -265,7 +259,6 @@ void jouerMelodie(){
  */
 void arreterMelodie(){
     noTone(PIEZO_BUZZER);
-    melodieJoue = false;
 }
 
 /******************************************************************

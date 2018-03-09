@@ -13,6 +13,7 @@
 #include <EEPROM.h>
 #include "pitches.h"  // Notes de musique
 #include "melodies.h" // Playlists de musiques
+
 #define boutonAlarmeControl 2  // digital
 #define boutonPlus          3  // digital
 #define boutonMoins         4  // digital
@@ -34,7 +35,7 @@
 const int SNOOZEATTENTE     = 10;               // Durant combien de minutes l'utilisateur va t'il encore dormir ? (en secondes)
 const int DUREEALARME       = 20;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
 const int BOUTONALARME[] = {9, 8, 10, 11};      // Quelles pin pour chaques alarmes
-const float vitesseLecture  = 1;                // Vitesse sonore des alarmes (par défaut 1)
+const float VITESSELECTURE  = 1;                // Vitesse sonore des alarmes (par défaut 1)
 const int MELODIE[][2]      = ALARM1;           // Sélectionner la musique que vous désirez pour vos alarmes
 // ================================================
 
@@ -157,7 +158,7 @@ void jouerMelodie(){
     if(prochaineNote()){
 
       int dureeNote = 2000 / MELODIE[notePosition][1];
-      tone(piezoBuzzer,MELODIE[notePosition][0], dureeNote * vitesseLecture); 
+      tone(piezoBuzzer,MELODIE[notePosition][0], dureeNote * VITESSELECTURE); 
       
       int nbrLignesTableauMelodie = (sizeof( MELODIE ) / sizeof( int ) / 2) -1;
       if( notePosition >= nbrLignesTableauMelodie )
@@ -174,7 +175,7 @@ boolean prochaineNote(){
 
   int dureeNote = 2000 / MELODIE[notePosition-1][1];
   
-  if(maintenant - notePrecedente >= dureeNote * vitesseLecture){
+  if(maintenant - notePrecedente >= dureeNote * VITESSELECTURE){
     notePrecedente = maintenant;
     return true;
   }

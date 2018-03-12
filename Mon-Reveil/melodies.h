@@ -185,6 +185,6 @@
   {NOTE_A4,  20}} 
 
 // Alarme sonsorité 1
-#define ALARM1{  \
-  {NOTE_A4,  20},\
+#define ALARME1 {  \
+  {NOTE_A4,  20},  \
   {NOTE_C4,  20}}

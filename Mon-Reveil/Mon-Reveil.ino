@@ -218,23 +218,30 @@ void setup() {
 
   // Démarrer le lien avec le RTC en I2C
   rtc.begin();
-  h, m, 0) ); // Change l'heure de le RTC 
-  }
-
-  // Formattage de l'EEPROM si rien dedans (vérification si fanion égale à 255) et si la version est égale à ce qu'il y a dans l'EEPROM
-  if( EEPROM.read(0) != 255 || EEPROM.read(1) != VERSION )
-    eepromConfiguration();
+  
   // Configuration de l'heure par l'utilisateur si ce n'a pas été encore fait
   if ( !rtc.isrunning() ){
     int h = 0;
     int m = 0;
     changerHeureVisuel( &h, &m );
-    rtc.adjust( DateTime(2018, 2, 20, 
+    rtc.adjust( DateTime(2018, 2, 20, h, m, 0) ); // Change l'heure de le RTC 
+  }
+
+  // Formattage de l'EEPROM si rien dedans (vérification si fanion égale à 255) et si la version est égale à ce qu'il y a dans l'EEPROM
+  if( EEPROM.read(0) != 255 || EEPROM.read(1) != VERSION )
+    eepromConfiguration();
+    
+  // Configuration de l'heure par l'utilisateur si ce n'a pas été encore fait
+  if ( !rtc.isrunning() ){
+    int h = 0;
+    int m = 0;
+    changerHeureVisuel( &h, &m );
+    rtc.adjust( DateTime(2018, 2, 20, h, m, 0) ); // Change l'heure de le RTC 
+  }
 
   // Définir la luminosité des afficheurs
   afficheurs.setBrightness( EEPROM.read(2) );
 
-  
   // Configuration des dates/heures sur les alarmes
   DateTime maintenant = rtc.now();
   int j = 0;

@@ -37,13 +37,13 @@
 #define ACTION_SNOOZE          2
 
 // ================================================
-// ================= A configurer =================
+// =============== Personnalisation ===============
 // ================================================
 const int SNOOZE_ATTENTE     = 10;               // Durant combien de temps l'utilisateur va t'il encore dormir ? (en secondes)
 const int DUREE_ALARME       = 20;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
 const int BOUTON_ALARME[]    = {8, 7, 9, 10};    // Quelles pins pour activer/désactiver chaques alarmes
 const float VITESSE_LECTURE  = 1;                // Vitesse sonore des alarmes (par défaut 1)
-const int MELODIE[][ 2 ]     = ALARM1;           // Sélectionner la musique que vous désirez pour vos alarmes (voir melodies.h)
+const int MELODIE[][ 2 ]     = MARIO;            // Sélectionner la musique que vous désirez pour vos alarmes (voir melodies.h)
 // ================================================
 
 
@@ -52,8 +52,8 @@ struct alarme{
     DateTime heureSonne = 0;      // A quelle heure l'alarme sonnera-t'elle ?
     DateTime heureStop = 0;       // A quelle heure l'alarme va t'elle s'arrêter automatiquement si elle est pas coupé
     DateTime snoozeSonne = 0;     // L'heure ou le snooze sonnera
-    boolean programme = false;    // L'alarme a-t'elle été programmée par l'utilisateur ?
-    boolean sonne = false;        // L'alarme est-elle en train de sonner ?
+    boolean programme = false;     // L'alarme a-t'elle été programmée par l'utilisateur ?
+    boolean sonne = false;         // L'alarme est-elle en train de sonner ?
 };
 const int NBRALARMES = sizeof( BOUTON_ALARME ) / sizeof( int );  // Combien d'alarmes programables
 struct alarme alarme[ NBRALARMES ];                              // Déclaration de la structure
@@ -68,17 +68,53 @@ unsigned long notePrecedente = 0; // Savoir la dernière fois (durée) que la no
 int notePosition = 0;  
          
 // ### Autres ###
-Adafruit_7segment afficheurs = Adafruit_7segment(); // Initialisation de l'afficheur 7 segments
-RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de l'rtc
+Adafruit_7segment afficheurs = Adafruit_7segment();    // Initialisation de l'afficheur 7 segments
+RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
+
+// ### HACK ###
+// Ajouter vos variables hack
+// Exemple : période pour actionner un servo moteur
+#define SERVO_MOTEUR   6 
+#include <Servo.h>
+Servo monServo; 
+unsigned long moteurTempsAvant = 0 ;
 
 /******************************************************************
  *                            Hackable                            *
  ******************************************************************/
 /*
+ * Exemples Actions moteur
+ */
+void activerMoteur(){
+    // Remise à zéro du moteur
+    moteurTempsAvant = 0;
+    monServo.write( 0 );
+}
+void jouerMoteur(){
+  unsigned estIlTemps = effectuerAction( moteurTempsAvant, 1500 );
+  
+  if( estIlTemps != 0 ){
+    // Changer quand a été effectué l'action précédente
+    moteurTempsAvant = estIlTemps;
+    
+    // Bouger le servo de 90°
+    monServo.write( 90 );
+  }
+  else
+    monServo.write( 0 );
+}
+void stopMoteur(){
+  monServo.write( 0 );
+}
+
+
+/*
  * Alarme qui commence à sonner
  */
-void alarmeStart(int alarmePos){
+void alarmeStart( int alarmePos ){
   activerMelodie();
+  // Hack moteur
+  activerMoteur();
 }
 
 /*
@@ -86,6 +122,8 @@ void alarmeStart(int alarmePos){
  */
 void alarmePulse(){
   jouerMelodie();
+  // Hack moteur
+  jouerMoteur();
 }
 
 /*
@@ -93,9 +131,30 @@ void alarmePulse(){
  */
 void alarmeStop(int alarmePos){
   arreterMelodie();
+  stopMoteur();
 }
 /*
- * Affichage du point désignant si l'alarme est active
+ * Vérifier si c'est le moment d'effectuer l'action
+ * 
+ * ARGUMENTS
+ * tempsAvant est temps précédent en milisecondes
+ * dureeAttente est le temps avant de relancer l'exécution
+ * 
+ * RETURN
+ * 0 Signifie pas maintenant
+ * x valeur (unsigned long) : effectuer l'action + changer le tempsAvant (définie dans l'entête du code)
+ */
+unsigned long effectuerAction( unsigned long tempsAvant, int dureeAttente ){
+  unsigned long maintenant = millis();
+
+  if( maintenant - tempsAvant >= dureeAttente )
+    return maintenant;
+    
+  return 0;
+}   
+/*
+ * Affichage du point désignant si l'alarme est active ou pas
+ * Clignote si sonne
  */
 boolean affichagePoint(int position){
   switch(position){
@@ -134,6 +193,9 @@ void setup() {
   
   // Communication RS232
   Serial.begin( 9600 );
+
+  // EXEMPLE SERVO
+  monServo.attach(  SERVO_MOTEUR ); 
   
   // Initialisation des boutons
   pinMode( BOUTON_OK, INPUT_PULLUP );
@@ -142,6 +204,7 @@ void setup() {
   pinMode( BOUTON_LUMINOSITE, INPUT_PULLUP );
   pinMode( BOUTON_ALARME_CONTROLE, INPUT_PULLUP );
   pinMode( BOUTON_SNOOZE, INPUT_PULLUP );
+  // Boucles pour les broches utilisées pour activer/désactiver les alarmes
   for( int i=0 ; i<NBRALARMES ; i++ )
     pinMode( BOUTON_ALARME[i], INPUT_PULLUP );
 
@@ -150,23 +213,23 @@ void setup() {
   pinMode( LED_BOUTON_SNOOZE, OUTPUT );
   pinMode( PIEZO_BUZZER, OUTPUT );
   
-  // Addresse I2C des afficheurs 
+  // Adresse I2C des afficheurs 
   afficheurs.begin( 0x70 );
 
-  // Démarrer le lien avec l'RTC en I2C
+  // Démarrer le lien avec le RTC en I2C
   rtc.begin();
-  
-  // Configuration de l'heure par l'utilisateur si ce n'a pas été encore fait
-  if ( !rtc.isrunning() ){
-    int h = 0;
-    int m = 0;
-    changerHeureVisuel( &h, &m );
-    rtc.adjust( DateTime(2018, 2, 20, h, m, 0) ); // Change l'heure de l'RTC 
+  h, m, 0) ); // Change l'heure de le RTC 
   }
 
   // Formattage de l'EEPROM si rien dedans (vérification si fanion égale à 255) et si la version est égale à ce qu'il y a dans l'EEPROM
   if( EEPROM.read(0) != 255 || EEPROM.read(1) != VERSION )
     eepromConfiguration();
+  // Configuration de l'heure par l'utilisateur si ce n'a pas été encore fait
+  if ( !rtc.isrunning() ){
+    int h = 0;
+    int m = 0;
+    changerHeureVisuel( &h, &m );
+    rtc.adjust( DateTime(2018, 2, 20, 
 
   // Définir la luminosité des afficheurs
   afficheurs.setBrightness( EEPROM.read(2) );
@@ -258,7 +321,7 @@ void jouerMelodie(){
  * Arrèter la mélodie
  */
 void arreterMelodie(){
-    noTone(PIEZO_BUZZER);
+    noTone( PIEZO_BUZZER );
 }
 
 /******************************************************************
@@ -306,8 +369,8 @@ void alarmeGestionAutomatique(){
         alarme[i].sonne = false;
 
         // Eteindre les boutons d'arcade
-        digitalWrite(LED_BOUTON_OK, LOW);
-        digitalWrite(LED_BOUTON_SNOOZE, LOW);
+        digitalWrite( LED_BOUTON_OK, LOW );
+        digitalWrite( LED_BOUTON_SNOOZE, LOW );
         
         // Remise à zéro du moment ou on a stopper la dernière fois l'alarme
         alarme[i].heureStop = 0;
@@ -350,14 +413,14 @@ void controlerAlarme(){
         alarme[i].sonne = false;
 
         // Eteindre les boutons d'arcade
-        digitalWrite(LED_BOUTON_OK, LOW);
-        digitalWrite(LED_BOUTON_SNOOZE, LOW);
+        digitalWrite( LED_BOUTON_OK, LOW );
+        digitalWrite( LED_BOUTON_SNOOZE, LOW );
 
         // Changer la dernière action
         alarmeDerniereAction = ACTION_STOP;
         
         // Stopper les routines des alarmes
-        alarmeStop(i);
+        alarmeStop(  i );
         
         // Posposer l'alarme à demain
         alarme[i].heureSonne = alarme[i].heureSonne.unixtime() + 86400;
@@ -372,17 +435,17 @@ void controlerAlarme(){
         alarmeDerniereAction = ACTION_STOP;
         
         // Désactiver la led du snooze
-        digitalWrite(LED_BOUTON_SNOOZE, LOW);
+        digitalWrite( LED_BOUTON_SNOOZE, LOW );
       }
     }
   }
   
   // ### BOUTON SNOOZE ###
-  if( estAppuye(BOUTON_SNOOZE) ){
+  if( estAppuye( BOUTON_SNOOZE ) ){
     for(int i=0 ; i<NBRALARMES ; i++){
       if( alarme[i].sonne ){
         // L'alarme sonne plus
-        alarmeStop(i);
+        alarmeStop( i );
         
         // Définir quand faire sonner le snooze
         alarme[i].snoozeSonne = rtc.now().unixtime() + SNOOZE_ATTENTE;
@@ -391,7 +454,7 @@ void controlerAlarme(){
         alarmeDerniereAction = ACTION_SNOOZE;
 
         // Activer la led du snooze
-        digitalWrite(LED_BOUTON_SNOOZE, HIGH);
+        digitalWrite( LED_BOUTON_SNOOZE, HIGH );
       }
     }
   }
@@ -405,12 +468,12 @@ void changerEtatAlarmes(){
   for(int i=0 ; i<NBRALARMES ; i++){
 
     if( estAppuye( BOUTON_ALARME[i] ) ){
-      Serial.println(i);
+      
       // Changer l'état
       alarme[i].programme = !alarme[i].programme;
 
       // Si on active l'alarme
-      if(alarme[i].programme){
+      if( alarme[i].programme ){
 
         DateTime maintenant = rtc.now();
         
@@ -420,8 +483,8 @@ void changerEtatAlarmes(){
 
         
         // Dessiner les heures et minutes 
-        affichageMinutes(alarme[i].heureSonne.minute(), true);
-        affichageHeures(alarme[i].heureSonne.hour(), true);
+        affichageMinutes( alarme[i].heureSonne.minute(), true );
+        affichageHeures( alarme[i].heureSonne.hour(), true );
         
         // Délai pour afficher l'heure
         delay( 300 );
@@ -490,16 +553,16 @@ void changerHeureAlarme(){
         int h = alarme[alarmeNb -1].heureSonne.hour(); 
         int m = alarme[alarmeNb -1].heureSonne.minute();
         
-        changerHeureVisuel( &h, &m);
+        changerHeureVisuel( &h, &m );
         
         // Changement de son heure
         DateTime maintenant = rtc.now();
         alarme[alarmeNb -1].heureSonne = DateTime(maintenant.year(), maintenant.month(), maintenant.day(), h, m, 0);
 
         // Changer l'heure dans l'EEPROM
-        EEPROM.write(alarmeNb*3, h);
+        EEPROM.write( alarmeNb*3, h );
         // Changer la minute dans l'EEPROM
-        EEPROM.write((alarmeNb*3)+1, m);
+        EEPROM.write( (alarmeNb*3)+1, m );
 
         alarmeBoucle = false;
 
@@ -541,22 +604,22 @@ void eepromConfiguration(){
     
     // Formatter l'EEPROM
     for (int i = 0 ; i < EEPROM.length() ; i++) 
-       EEPROM.write(i, 0);
-    Serial.println("EEPROM formatté !");
+       EEPROM.write( i, 0 );
+    Serial.println( "EEPROM formatté !" );
     
     // Valeur par défaut pour savoir si l'EEPROM est formatté
-    EEPROM.write(0, 255); 
-    Serial.println("Valeur par défaut définie !");
+    EEPROM.write( 0, 255 ); 
+    Serial.println( "Valeur par défaut définie !" );
 
     // Définir une version
-    EEPROM.write(1, VERSION); 
-    Serial.print("Version ");
-    Serial.print(VERSION/10);
-    Serial.println(" définie !");
+    EEPROM.write( 1, VERSION ); 
+    Serial.print( "Version " );
+    Serial.print( VERSION/10 );
+    Serial.println( " définie !" );
     
     // Définir une luminosité 
-    EEPROM.write(2, 15); 
-    Serial.println("Valeur par défaut pour la luminosité est définie !");
+    EEPROM.write( 2, 15 ); 
+    Serial.println( "Valeur par défaut pour la luminosité est définie !" );
 }
 /******************************************************************
  *                     Changer la luminosité                      *
@@ -567,8 +630,11 @@ void eepromConfiguration(){
 void changerLuminosite(){
   
   if( estAppuye( BOUTON_LUMINOSITE ) ) {
+    
     boolean luminositeBoucle = true;
-    int luminosite = EEPROM.read(2);
+    
+    // Obtenir la luminosité venant de l'EEPROM
+    int luminosite = EEPROM.read( 2 );
     
     // Cacher les afficheurs de l'heure
     affichageHeures( 1, false );
@@ -626,8 +692,9 @@ boolean estAppuye( int pinAppuye ){
 }   
 /*
  * Vérifier si c'est le moment de faire clignoter
+ * changerPeriode signifie si on change la période précédente, il est important de le changer uniquement quand on fait clignoter uniquement les 2 points au centre de l'écran
  */
-boolean clignote(boolean changerPeriode){
+boolean clignote( boolean changerPeriode ){
   unsigned long maintenant = millis();
 
   if( maintenant - avantClignote >= 1000 ){
@@ -654,7 +721,7 @@ void changerHeure(){
 
     changerHeureVisuel( &h,&m );
     // Changer l'heure
-    rtc.adjust( DateTime(maintenant.year(), maintenant.month(), maintenant.day(), h, m, 0) ); // Change l'heure de l'RTC 
+    rtc.adjust( DateTime(maintenant.year(), maintenant.month(), maintenant.day(), h, m, 0) ); // Change l'heure de le RTC 
   }
 }
  /*
@@ -780,7 +847,7 @@ void changerHeureVisuel( int* heures, int* minutes ){
  }
 
  /*       
- * Ajouter une seconde et obtenir l'heure       
+ * Afficher l'heure 
  */
 void afficherTemps(){
    DateTime maintenant = rtc.now();
@@ -797,5 +864,6 @@ void afficherSeparateur(){
     // Changer l'état des 2 points
     separateur = !separateur;
     afficheurs.drawColon( separateur );
+    afficheurs.writeDisplay();
   }
 }

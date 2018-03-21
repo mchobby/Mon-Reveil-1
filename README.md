@@ -30,9 +30,9 @@ Pour plus d'informations vistez la section [Tester](https://wiki.mchobby.be/inde
 
 ## Développement
 L'ensemble du code se trouve dans le dossier __Mon-Reveil__. 
-Pour le bon fonctionnement du code, il est nécassaire d'inclure dans le dossier __Mon-Reveil__, les fichiers [Adafruit_LEDBackpack.h](https://github.com/adafruit/Adafruit_LED_Backpack/blob/master/Adafruit_LEDBackpack.h) et [Adafruit_LEDBackpack.cpp](https://github.com/adafruit/Adafruit_LED_Backpack/blob/master/Adafruit_LEDBackpack.cpp)
+Pour le bon fonctionnement du code, il est nécassaire d'inclure dans le dossier __Mon-Reveil__, les fichiers [Adafruit_LEDBackpack.h](https://github.com/adafruit/Adafruit_LED_Backpack/blob/master/Adafruit_LEDBackpack.h) et [Adafruit_LEDBackpack.cpp](https://github.com/adafruit/Adafruit_LED_Backpack/blob/master/Adafruit_LEDBackpack.cpp).
 
-Pour plus d'informations, visitez la section [Programmer](https://wiki.mchobby.be/index.php?title=Mon-Reveil-Programmer)
+Pour plus d'informations, visitez la section [Programmer](https://wiki.mchobby.be/index.php?title=Mon-Reveil-Programmer).
 
 
 __Developped by Stefan for shop.mchobby.be - CC-BY-SA__

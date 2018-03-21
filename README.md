@@ -22,12 +22,11 @@ Le boitier contient 5 parties (disponible dans le dossier 3D):
 Pour plus d'information vistez le [wiki](https://wiki.mchobby.be/index.php?title=Mon-Reveil-3D)
 
 ## Tester les branchements des boutons et du piezzo buzzer
-L'ensemble du code se trouve dans le dossier __Boutons-Test__
+L'ensemble du code se trouve dans le dossier __Boutons-Test__.
 
 ## Développement
 L'ensemble du code se trouve dans le 
 
 
-> Deveopped by Stefan for shop.mchobby.be - CC-BY-SA 
-
-> Distributed as it, without warranties              
+    Deveopped by Stefan for shop.mchobby.be - CC-BY-SA 
+    Distributed as it, without warranties              

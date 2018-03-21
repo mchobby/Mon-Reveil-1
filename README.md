@@ -1,7 +1,8 @@
 # Mon Reveil
-Création d'un réveil :musical_note: matin hackable (personnalisable) autour d'un Arduino Uno.
+Création d'un réveil matin hackable (personnalisable) autour d'un Arduino Uno :musical_note:.
 
 ![alt tag](https://wiki.mchobby.be/images/thumb/7/7f/Mon-Reveil-04.jpg/800px-Mon-Reveil-04.jpg)
+
 L'ensemble des informations sur le montage et les pièces nécessaire à la réalisation du réveil se trouvent sur le [wiki  de MCHobby](https://wiki.mchobby.be/index.php?title=Mon-Reveil).
 
 ## Matériel 

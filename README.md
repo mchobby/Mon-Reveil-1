@@ -34,5 +34,5 @@ Pour le bon fonctionnement du code, il est nécassaire d'inclure dans le dossier
 
 Pour plus d'informations, visitez la section [Programmer](https://wiki.mchobby.be/index.php?title=Mon-Reveil-Programmer)
 
-    Developped by Stefan for shop.mchobby.be - CC-BY-SA 
-    Distributed as it, without warranties              
+    __Developped by Stefan for shop.mchobby.be - CC-BY-SA 
+    Distributed as it, without warranties__              

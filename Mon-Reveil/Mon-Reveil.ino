@@ -9,7 +9,7 @@
 */
 
 // Version du programme (Version : 0.1)
-#define VERSION                10 
+#define VERSION                11 
 
 #include "Adafruit_LEDBackpack.h"
 #include <RTClib.h>
@@ -298,7 +298,7 @@ void loop() {
  */
 void activerMelodie(){
   // Remettre au début de la mélodie
-  notePrecedente = 0;
+  notePosition = 0;
 }
 /*
  * Jouer la mélodie
@@ -334,6 +334,7 @@ void jouerMelodie(){
  */
 void arreterMelodie(){
     noTone( PIEZO_BUZZER );
+    notePosition = 0;
 }
 
 /******************************************************************
@@ -496,8 +497,8 @@ void changerEtatAlarmes(){
         DateTime maintenant = rtc.now();
         
         // Définir l'alarme aujourd'hui si l'heure n'est pas encore dépassée
-        if( ( alarme[i].heureSonne.minute() +  alarme[i].heureSonne.hour() * 60 ) <= ( alarme[i].heureSonne.minute() +  alarme[i].heureSonne.hour() * 60 ) )
-          alarme[i].heureSonne = alarme[i].heureSonne.unixtime() - 86400;
+        if( ( maintenant.minute() +  maintenant.hour() * 60 ) <= ( alarme[i].heureSonne.minute() +  alarme[i].heureSonne.hour() * 60 ) )
+          alarme[i].heureSonne = maintenant.unixtime() - maintenant.second();
         
         // Dessiner les heures et minutes 
         affichageMinutes( alarme[i].heureSonne.minute(), true );
@@ -511,10 +512,11 @@ void changerEtatAlarmes(){
         afficherTemps();
 
       
-      // Si cette alarme sonne, éteindre les boutons.
+      // Si cette alarme sonne, éteindre les boutons et stopper l'alarme
       if( alarme[i].sonne ){
         digitalWrite( LED_BOUTON_OK, LOW );
         digitalWrite( LED_BOUTON_SNOOZE, LOW );
+        alarmeStop( i );
       }
 
       // Réecrire l'état de l'alarme dans l'EEPROM

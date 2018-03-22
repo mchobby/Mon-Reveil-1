@@ -88,23 +88,24 @@ unsigned long moteurTempsAvant = 0 ;
 void activerMoteur(){
     // Remise à zéro du moteur
     moteurTempsAvant = 0;
-    monServo.write( 0 );
 }
 void jouerMoteur(){
-  unsigned estIlTemps = effectuerAction( moteurTempsAvant, 1500 );
+  unsigned estIlTemps = effectuerAction( moteurTempsAvant, 8000 );
   
   if( estIlTemps != 0 ){
     // Changer quand a été effectué l'action précédente
     moteurTempsAvant = estIlTemps;
     
-    // Bouger le servo de 90°
-    monServo.write( 90 );
+    // Bouger le servo de 180°
+    monServo.write( 180 );
+    delay(1000);
   }
-  else
-    monServo.write( 0 );
+  else{
+      monServo.write( 90 );
+  }
 }
 void stopMoteur(){
-  monServo.write( 0 );
+  monServo.write( 1 );
 }
 
 
@@ -112,26 +113,28 @@ void stopMoteur(){
  * Alarme qui commence à sonner
  */
 void alarmeStart( int alarmePos ){
-  activerMelodie();
-  // Hack moteur
-  activerMoteur();
+  if( alarmePos == 0 )
+    activerMoteur();
+  else
+    activerMelodie();
 }
 
 /*
  * Pendant que l'alarme sonne, répéter une étape
  */
-void alarmePulse(){
-  jouerMelodie();
-  // Hack moteur
-  jouerMoteur();
+void alarmePulse( int alarmePos ){
+  if( alarmePos == 0 )
+    jouerMoteur();
+  else
+    jouerMelodie();
 }
 
 /*
  * Alarme qui cesse de sonner
  */
 void alarmeStop(int alarmePos){
-  arreterMelodie();
-  stopMoteur();
+    stopMoteur();
+    arreterMelodie();
 }
 /*
  * Vérifier si c'est le moment d'effectuer l'action
@@ -250,6 +253,8 @@ void setup() {
     alarme[j].programme = EEPROM.read(i+2);
     j++;
   }
+
+  monServo.write( 1 );
 }
 
 /*
@@ -396,7 +401,7 @@ void alarmeGestionAutomatique(){
         // Allumer les boutons d'arcade
         digitalWrite( LED_BOUTON_OK, HIGH );
         digitalWrite( LED_BOUTON_SNOOZE, HIGH );
-        alarmePulse();
+        alarmePulse( i );
       }
     }
   }
@@ -435,6 +440,8 @@ void controlerAlarme(){
       // Si on est en snooze mais l'alarme ne sonne pas
       else if( alarmeDerniereAction == ACTION_SNOOZE ){
         
+        alarme[i].sonne = false;
+        
         // Posposer l'alarme à demain
         alarme[i].heureSonne = alarme[i].heureSonne.unixtime() + 86400;
         
@@ -451,8 +458,11 @@ void controlerAlarme(){
   if( estAppuye( BOUTON_SNOOZE ) ){
     for(int i=0 ; i<NBRALARMES ; i++){
       if( alarme[i].sonne ){
+        
         // L'alarme sonne plus
         alarmeStop( i );
+
+        alarme[i].sonne = false;
         
         // Définir quand faire sonner le snooze
         alarme[i].snoozeSonne = rtc.now().unixtime() + SNOOZE_ATTENTE;
@@ -461,6 +471,7 @@ void controlerAlarme(){
         alarmeDerniereAction = ACTION_SNOOZE;
 
         // Activer la led du snooze
+        digitalWrite( LED_BOUTON_OK, LOW );
         digitalWrite( LED_BOUTON_SNOOZE, HIGH );
       }
     }
@@ -487,7 +498,6 @@ void changerEtatAlarmes(){
         // Définir l'alarme aujourd'hui si l'heure n'est pas encore dépassée
         if( ( alarme[i].heureSonne.minute() +  alarme[i].heureSonne.hour() * 60 ) <= ( alarme[i].heureSonne.minute() +  alarme[i].heureSonne.hour() * 60 ) )
           alarme[i].heureSonne = alarme[i].heureSonne.unixtime() - 86400;
-
         
         // Dessiner les heures et minutes 
         affichageMinutes( alarme[i].heureSonne.minute(), true );
@@ -499,6 +509,13 @@ void changerEtatAlarmes(){
       // Si on désactive l'alarme
       else
         afficherTemps();
+
+      
+      // Si cette alarme sonne, éteindre les boutons.
+      if( alarme[i].sonne ){
+        digitalWrite( LED_BOUTON_OK, LOW );
+        digitalWrite( LED_BOUTON_SNOOZE, LOW );
+      }
 
       // Réecrire l'état de l'alarme dans l'EEPROM
       EEPROM.write( (( i+1 )*3)+2 , alarme[i].programme);  

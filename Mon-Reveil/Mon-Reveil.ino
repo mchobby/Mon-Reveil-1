@@ -73,6 +73,7 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
 
 // ### ZONE HACK ###
 
+
 /******************************************************************
  *                            Hackable                            *
  ******************************************************************/
@@ -81,21 +82,21 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
  * Alarme qui commence à sonner
  */
 void alarmeStart( int alarmePos ){
-    activerMelodie();
+  activerMelodie();
 }
 
 /*
  * Pendant que l'alarme sonne, répéter une étape
  */
 void alarmePulse( int alarmePos ){
-    jouerMelodie();
+  jouerMelodie();
 }
 
 /*
  * Alarme qui cesse de sonner
  */
 void alarmeStop(int alarmePos){
-    arreterMelodie();
+  arreterMelodie();
 }
 /*
  * Vérifier si c'est le moment d'effectuer l'action
@@ -153,7 +154,8 @@ boolean affichagePoint(int position){
 /*
  *  Configuration avant lancement de la routine
  */
-void setup() {  
+void setup() {
+  
   // Communication RS232
   Serial.begin( 9600 );
 
@@ -215,7 +217,7 @@ void setup() {
   }
 
   // ### ZONE HACK ###
-    
+
 }
 
 /*

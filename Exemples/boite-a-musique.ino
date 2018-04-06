@@ -118,7 +118,7 @@ void alarmePulse( int alarmePos ){
  */
 void alarmeStop(int alarmePos){
   if( alarmePos == 0 )
-    topBoite();
+    stopBoite();
   else
     arreterMelodie();
 }

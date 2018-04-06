@@ -9,7 +9,7 @@
 */
 
 // Version du programme (Version : 0.1)
-#define VERSION                11 
+#define VERSION                1
 
 #include "Adafruit_LEDBackpack.h"
 #include <RTClib.h>
@@ -40,7 +40,7 @@
 // =============== Personnalisation ===============
 // ================================================
 const int SNOOZE_ATTENTE     = 10;               // Durant combien de temps l'utilisateur va t'il encore dormir ? (en secondes)
-const int DUREE_ALARME       = 20;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
+const int DUREE_ALARME       = 60;               // Durant combien de temps l'alarme va t'elle sonner (en secondes) 
 const int BOUTON_ALARME[]    = {8, 7, 9, 10};    // Quelles pins pour activer/désactiver chaques alarmes
 const float VITESSE_LECTURE  = 1;                // Vitesse sonore des alarmes (par défaut 1)
 const int MELODIE[][ 2 ]     = MARIO;            // Sélectionner la musique que vous désirez pour vos alarmes (voir melodies.h)
@@ -52,70 +52,35 @@ struct alarme{
     DateTime heureSonne = 0;      // A quelle heure l'alarme sonnera-t'elle ?
     DateTime heureStop = 0;       // A quelle heure l'alarme va t'elle s'arrêter automatiquement si elle est pas coupé
     DateTime snoozeSonne = 0;     // L'heure ou le snooze sonnera
-    boolean programme = false;     // L'alarme a-t'elle été programmée par l'utilisateur ?
-    boolean sonne = false;         // L'alarme est-elle en train de sonner ?
+    boolean programme = false;    // L'alarme a-t'elle été programmée par l'utilisateur ?
+    boolean sonne = false;        // L'alarme est-elle en train de sonner ?
 };
 const int NBRALARMES = sizeof( BOUTON_ALARME ) / sizeof( int );  // Combien d'alarmes programables
 struct alarme alarme[ NBRALARMES ];                              // Déclaration de la structure
 byte alarmeDerniereAction = ACTION_STOP;                         // Dernière action effectué sur l'alarme
 
 // ### Séparateur ###
-boolean separateur = false;      // 2 points au milieu des afficheurs
-unsigned long avantClignote = 0; // Savoir la dernière fois (durée) que les 2 points ont changés d'état (allumé/éteind)
+boolean separateur = false;       // 2 points au milieu des afficheurs
+unsigned long avantClignote = 0;  // Savoir la dernière fois (durée) que les 2 points ont changés d'état (allumé/éteind)
 
 // ### Mélodie ###
 unsigned long notePrecedente = 0; // Savoir la dernière fois (durée) que la note précédente a été démarrée
 int notePosition = 0;  
          
 // ### Autres ###
-Adafruit_7segment afficheurs = Adafruit_7segment();    // Initialisation de l'afficheur 7 segments
+Adafruit_7segment afficheurs = Adafruit_7segment(); // Initialisation de l'afficheur 7 segments
 RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
 
-// ### HACK ###
-// Ajouter vos variables hack
-// Exemple : période pour actionner un servo moteur
-#define SERVO_MOTEUR   6 
-#include <Servo.h>
-Servo monServo; 
-unsigned long moteurTempsAvant = 0 ;
+// ### ZONE HACK ###
 
 /******************************************************************
  *                            Hackable                            *
  ******************************************************************/
-/*
- * Exemples Actions moteur
- */
-void activerMoteur(){
-    // Remise à zéro du moteur
-    moteurTempsAvant = 0;
-}
-void jouerMoteur(){
-  unsigned estIlTemps = effectuerAction( moteurTempsAvant, 8000 );
-  
-  if( estIlTemps != 0 ){
-    // Changer quand a été effectué l'action précédente
-    moteurTempsAvant = estIlTemps;
-    
-    // Bouger le servo de 180°
-    monServo.write( 180 );
-    delay(1000);
-  }
-  else{
-      monServo.write( 90 );
-  }
-}
-void stopMoteur(){
-  monServo.write( 1 );
-}
-
 
 /*
  * Alarme qui commence à sonner
  */
 void alarmeStart( int alarmePos ){
-  if( alarmePos == 0 )
-    activerMoteur();
-  else
     activerMelodie();
 }
 
@@ -123,9 +88,6 @@ void alarmeStart( int alarmePos ){
  * Pendant que l'alarme sonne, répéter une étape
  */
 void alarmePulse( int alarmePos ){
-  if( alarmePos == 0 )
-    jouerMoteur();
-  else
     jouerMelodie();
 }
 
@@ -133,7 +95,6 @@ void alarmePulse( int alarmePos ){
  * Alarme qui cesse de sonner
  */
 void alarmeStop(int alarmePos){
-    stopMoteur();
     arreterMelodie();
 }
 /*
@@ -192,14 +153,10 @@ boolean affichagePoint(int position){
 /*
  *  Configuration avant lancement de la routine
  */
-void setup() {
-  
+void setup() {  
   // Communication RS232
   Serial.begin( 9600 );
 
-  // EXEMPLE SERVO
-  monServo.attach(  SERVO_MOTEUR ); 
-  
   // Initialisation des boutons
   pinMode( BOUTON_OK, INPUT_PULLUP );
   pinMode( BOUTON_MOINS, INPUT_PULLUP );
@@ -218,6 +175,9 @@ void setup() {
   
   // Adresse I2C des afficheurs 
   afficheurs.begin( 0x70 );
+  affichageHeures( 0, true);
+  affichageMinutes( 0, true);
+  delay( 1000 );
 
   // Démarrer le lien avec le RTC en I2C
   rtc.begin();
@@ -254,7 +214,8 @@ void setup() {
     j++;
   }
 
-  monServo.write( 1 );
+  // ### ZONE HACK ###
+    
 }
 
 /*

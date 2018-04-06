@@ -74,8 +74,8 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
 // ### ZONE HACK ###
 
 // -- Clochette --
-define SERVO_MOTEUR   11 
-include <Servo.h>
+#define SERVO_MOTEUR   11 
+#include <Servo.h>
 Servo monServo; 
 unsigned long moteurTempsAvant = 0 ;
 int sens = -1;

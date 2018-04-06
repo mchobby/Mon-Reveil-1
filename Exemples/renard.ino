@@ -74,8 +74,8 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
 // ### ZONE HACK ###
 
 // -- Renard --
-define RENARD_ACTIVE 6
-define RENARD_JOUE   12
+#define RENARD_ACTIVE 6
+#define RENARD_JOUE   12
 
 /******************************************************************
  *                            Hackable                            *

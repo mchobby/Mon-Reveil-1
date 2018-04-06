@@ -74,7 +74,7 @@ RTC_DS1307 rtc = RTC_DS1307();                      // Initialisation de le RTC
 // ### ZONE HACK ###
 
 // -- Relais --
-define RELAIS   12 
+#define RELAIS   12 
 
 /******************************************************************
  *                            Hackable                            *
